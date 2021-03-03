@@ -15,6 +15,8 @@ class Main(commands.Cog):
         self.ROLE_ID    = int(settings.ROLE_ID)
         self.ARCHIVE_ID = int(settings.ARCHIVE_ID)
 
+        self.loop.start()
+
     @commands.Cog.listener()
     async def on_ready(self):
         self.GUILD   = self.bot.get_guild(self.GUILD_ID)
@@ -46,6 +48,22 @@ class Main(commands.Cog):
 
     def getMember(self, id):
         return self.GUILD.get_member(id)
+
+    @tasks.loop(seconds=59)
+    async def loop(self):
+        await self.bot.wait_until_ready()
+        now = datetime.now().strftime('%H:%M')
+        if now == "23:59":
+            for channel in self.GUILD.text_channels:
+                if channel.category == None:
+                    try:
+                        channel_name = int(channel.name[0:8])
+                        today = int(datetime.now().strftime('%Y%m%d'))
+                    except ValueError:
+                        pass
+                    else:
+                        if channel_name <= today:
+                            await channel.edit(category=self.ARCHIVE)
 
 def setup(bot):
     return bot.add_cog(Main(bot))
