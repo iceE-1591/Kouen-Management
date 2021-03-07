@@ -2,6 +2,7 @@ from discord.ext import commands,tasks
 import discord
 import asyncio
 from datetime import datetime
+import random
 
 import settings
 
@@ -14,6 +15,7 @@ class Main(commands.Cog):
         self.MESSAGE_ID = int(settings.MESSAGE_ID)
         self.ROLE_ID    = int(settings.ROLE_ID)
         self.ARCHIVE_ID = int(settings.ARCHIVE_ID)
+        self.VC_ID      = int(settings.VC_ID)
 
         self.loop.start()
 
@@ -23,6 +25,7 @@ class Main(commands.Cog):
         self.CHANNEL = self.GUILD.get_channel(self.CHANNEL_ID)
         self.ROLE    = self.GUILD.get_role(self.ROLE_ID)
         self.ARCHIVE = self.GUILD.get_channel(self.ARCHIVE_ID)
+        self.VC      = self.GUILD.get_channel(self.VC_ID)
 
         print("Ready")
 
@@ -48,6 +51,16 @@ class Main(commands.Cog):
 
     def getMember(self, id):
         return self.GUILD.get_member(id)
+
+    @commands.command()
+    async def random(self, ctx):
+        members = self.VC.members
+        if len(members) <= 10:
+            await ctx.send("参加者が10人以下の場合は実行できません。")
+        members = list(filter(lambda member: not member.bot, members))
+        if len(members) > 10:
+            members = random.sample(members, 10)
+        await ctx.send("今回の参加者"+"\n"+"\n".join(list(map(lambda member: member.name, members))))
 
     @tasks.loop(seconds=59)
     async def loop(self):
