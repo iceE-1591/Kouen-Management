@@ -79,9 +79,11 @@ class Main(commands.Cog):
                 text = ""
                 for i in txt:
                     text += i + "\n"
-                msg = await channel.send(f"{ctx.guild.get_role(774631842770845717).mention}\n{dt.strftime('%Y/%m/%d(%a)')}\n{start[0:2]}:{start[2:4]}-{end[0:2]}:{end[2:4]}\n{text}")
+                msg = await channel.send(f"{ctx.guild.get_role(818450296354897921).mention}\n{dt.strftime('%Y/%m/%d(%a)')}\n{start[0:2]}:{start[2:4]}-{end[0:2]}:{end[2:4]}\n{text}\n開催者:{ctx.author.mention}")
                 await msg.add_reaction("<:sanka:806135697513381900>")
                 await msg.add_reaction("<:kikisen:806135784839053373>")
+            else:
+                self.send_msg(ctx, "正しく時間を入力してください")
         else:
             self.send_msg(ctx, "開催日は今日から3ヵ月以内に設定してください")
 
