@@ -1,4 +1,4 @@
-from discord.ext import commands,tasks
+from discord.ext import commands, tasks
 import discord
 import asyncio
 from datetime import datetime
@@ -9,26 +9,27 @@ import locale
 
 import settings
 
+
 class Main(commands.Cog):
 
-    def __init__(self,bot):
-        self.bot        = bot
-        self.GUILD_ID   = int(settings.GUILD_ID)
+    def __init__(self, bot):
+        self.bot = bot
+        self.GUILD_ID = int(settings.GUILD_ID)
         self.CHANNEL_ID = int(settings.CHANNEL_ID)
         self.MESSAGE_ID = int(settings.MESSAGE_ID)
-        self.ROLE_ID    = int(settings.ROLE_ID)
+        self.ROLE_ID = int(settings.ROLE_ID)
         self.ARCHIVE_ID = int(settings.ARCHIVE_ID)
-        self.VC_ID      = int(settings.VC_ID)
+        self.VC_ID = int(settings.VC_ID)
 
         self.loop.start()
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.GUILD   = self.bot.get_guild(self.GUILD_ID)
+        self.GUILD = self.bot.get_guild(self.GUILD_ID)
         self.CHANNEL = self.GUILD.get_channel(self.CHANNEL_ID)
-        self.ROLE    = self.GUILD.get_role(self.ROLE_ID)
+        self.ROLE = self.GUILD.get_role(self.ROLE_ID)
         self.ARCHIVE = self.GUILD.get_channel(self.ARCHIVE_ID)
-        self.VC      = self.GUILD.get_channel(self.VC_ID)
+        self.VC = self.GUILD.get_channel(self.VC_ID)
 
         locale.setlocale(locale.LC_ALL, '')
         print("Ready")
@@ -64,14 +65,14 @@ class Main(commands.Cog):
         members = list(filter(lambda member: not member.bot, members))
         if len(members) > 10:
             members = random.sample(members, 10)
-        await ctx.send("今回の参加者"+"\n"+"\n".join(list(map(lambda member: member.name, members))))
+        await ctx.send("今回の参加者" + "\n" + "\n".join(list(map(lambda member: member.name, members))))
 
     @commands.command()
     async def create(self, ctx, date, start, end, *txt):
-        date  = self.get_num(date)
+        date = self.get_num(date)
         start = self.get_num(start)
-        end   = self.get_num(end)
-        now   = datetime.now().strftime('%Y%m%d')
+        end = self.get_num(end)
+        now = datetime.now().strftime('%Y%m%d')
         dt = datetime.strptime(date, '%Y%m%d')
         if len(date) == 8 and int(now) <= int(date) <= int(now) + 300:
             if len(start) == 4 and len(end) == 4:
@@ -79,19 +80,14 @@ class Main(commands.Cog):
                 text = ""
                 for i in txt:
                     text += i + "\n"
-                msg = await channel.send(f"{ctx.guild.get_role(818450296354897921).mention}\n{dt.strftime('%Y/%m/%d(%a)')}\n{start[0:2]}:{start[2:4]}-{end[0:2]}:{end[2:4]}\n{text}\n開催者:{ctx.author.mention}")
+                msg = await channel.send(
+                    f"{ctx.guild.get_role(818450296354897921).mention}\n{dt.strftime('%Y/%m/%d(%a)')}\n{start[0:2]}:{start[2:4]}-{end[0:2]}:{end[2:4]}\n{text}\n開催者:{ctx.author.mention}")
                 await msg.add_reaction("<:sanka:806135697513381900>")
                 await msg.add_reaction("<:kikisen:806135784839053373>")
             else:
                 self.send_msg(ctx, "正しく時間を入力してください")
         else:
             self.send_msg(ctx, "開催日は今日から3ヵ月以内に設定してください")
-
-
-
-
-
-
 
     def get_num(self, nums):
         return re.sub("\D", "", nums)
@@ -116,6 +112,7 @@ class Main(commands.Cog):
                     else:
                         if channel_name <= today:
                             await channel.edit(category=self.ARCHIVE)
+
 
 def setup(bot):
     return bot.add_cog(Main(bot))
