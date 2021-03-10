@@ -46,6 +46,11 @@ class Main(commands.Cog):
         if payload.channel_id == self.CHANNEL_ID:
             if payload.message_id == self.MESSAGE_ID:
                 await payload.member.remove_roles(self.ROLE)
+        if payload.emoji.id == int(settings.DELETE_ID_ID):
+            channel = self.GUILD.get_channel(payload.channel_id)
+            if channel.category == None:
+                if str(payload.member.id) == channel.topic:
+                    await channel.delete()
 
     @commands.Cog.listener()
     async def on_raw_reaction_remove(self, payload):
@@ -70,21 +75,23 @@ class Main(commands.Cog):
 
     @commands.command()
     async def create(self, ctx, date, start, end, *txt):
-        date = self.get_num(date)
+        date  = self.get_num(date)
         start = self.get_num(start)
-        end = self.get_num(end)
-        now = datetime.now().strftime('%Y%m%d')
-        dt = datetime.strptime(date, '%Y%m%d')
+        end   = self.get_num(end)
+        now   = datetime.now().strftime('%Y%m%d')
+        dt    = datetime.strptime(date, '%Y%m%d')
         if len(date) == 8 and int(now) <= int(date) <= int(now) + 300:
             if len(start) == 4 and len(end) == 4:
                 channel = await ctx.guild.create_text_channel(name=f"{date}{dt.strftime('%a')}_amongus")
-                text = ""
+                await channel.edit(topic=ctx.author.id)
+                text    = ""
                 for i in txt:
                     text += i + "\n"
                 msg = await channel.send(
-                    f"{ctx.guild.get_role(settings.ANNOUNCE_ID).mention}\n{dt.strftime('%Y/%m/%d(%a)')}\n{start[0:2]}:{start[2:4]}-{end[0:2]}:{end[2:4]}\n{text}\n開催者:{ctx.author.mention}")
+                    f"{self.ROLE.mention}\n{dt.strftime('%Y/%m/%d(%a)')}\n{start[0:2]}:{start[2:4]}-{end[0:2]}:{end[2:4]}\n{text}\n開催者:{ctx.author.mention}")
                 await msg.add_reaction(settings.SANKA_ID)
                 await msg.add_reaction(settings.KIKISEN_ID)
+                await msg.add_reaction(settings.DELETE_ID)
             else:
                 self.send_msg(ctx, "正しく時間を入力してください")
         else:
