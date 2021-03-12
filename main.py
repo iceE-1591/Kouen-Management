@@ -32,7 +32,7 @@ class Main(commands.Cog):
         self.ARCHIVE = self.GUILD.get_channel(self.ARCHIVE_ID)
         self.VC = self.GUILD.get_channel(self.VC_ID)
 
-        locale.setlocale(locale.LC_ALL, '')
+        locale.setlocale(locale.LC_ALL, 'ja_JP.utf8')
         print("Ready")
 
     @commands.Cog.listener()
